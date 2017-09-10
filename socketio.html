@@ -1,10 +1,11 @@
-<!-- socketIO config node, will aim to maintain the information for the context of nodes socketIo in and out-->
+<!-- nodo socketIO config, avrà lo scopo di mantenere le informazioni per il contesto de nodi socketIo in e out-->
 <script type="text/javascript">
     RED.nodes.registerType('socketio-config',{
         category: 'config',
         defaults: {
 			port:{value:80, required:true, validate:RED.validators.number()},
-            sendClient: {value:true},
+			sendClient: {value:true},
+			clientServePath: {value:"/public"},
             path: {value:"/socket.io"},
 			bindToNode: {value: false}
         },
@@ -15,9 +16,11 @@
 			$("#node-config-input-bindToNode").change(function() {
 				if($(this).is(":checked")) {
 					$("#node-row-bindToNode").hide();
+					$("#node-row-clientServePathe").hide();
 				}
 				else {
 					$("#node-row-bindToNode").show();
+					$("#node-row-clientServePath").show();
 				}
 			});
 			if (this.bindToNode) {
@@ -26,6 +29,10 @@
                 $("#node-config-input-bindToNode").prop('checked', false);
             }
 			$("#node-config-input-bindToNode").change();
+
+			if (this.clientServePath) {
+                $("#node-config-input-clientServePath").val(this.clientServePath);
+            }
 		}
     });
 </script>
@@ -37,6 +44,10 @@
 		<div id="node-row-bindToNode" class="hide">
 			<label for="node-config-input-port"><i class="fa fa-terminal"></i> Port</label>
 			<input type="text" id="node-config-input-port">
+		</div>
+		<div id="node-row-clientServePath" class="hide">
+			<label for="node-config-input-clientServePath"><i class="fa fa-folder-o"></i> Client Serve Path</label>
+			<input type="text" id="node-config-input-clientServePath" placeholder="/public">
 		</div>
     </div>
 	<div class="form-row">
@@ -50,7 +61,7 @@
 
 </script>
 
-<script type="text/x-red" data-help-name="socketio-config">
+<script type="text/x-red" data-help-name="socketio-in">
    <p>Socket IO node</p>
    <p>VUOTO</p>
 </script>
@@ -60,7 +71,7 @@
 <!-- devo validari i caratterii dei topic per evitare anche quelli vuoti -->
 <script type="text/javascript">
     RED.nodes.registerType('socketio-in',{
-		category:"SocketIO",
+		category:"kachelserver",
         color:"rgb(0, 230, 184)",
 		defaults:{
 			name:{value:""},
@@ -125,22 +136,22 @@
 <script type="text/x-red" data-help-name="socketio-in">
    <p>Socket IO Input node</p>
    <p>Implementation of a SocketIO server</p>
-   <p>This node can be used to receive socket events from a web page</p>
+   <p>This node can be used to receive socket event from a web page</p>
    <br />
    <p>This node output:</p>
    <p><code>msg.payload</code> as <i>Object</i> = event data received</p>
    <p><code>msg.socketIOEvent</code> as <i>String</i> = event type received</p>
-   <p><code>msg.socketIOId</code> as <i>String</i> = socket id that generated the event</p>
+   <p><code>msg.socketIOId</code> as <i>String</i> = socket id that generate the event</p>
    <p><code>msg.socketIOStaticProperties</code> as <i>Object</i> = User defined properties added to the socket</p>
    <br />
    <p>The user can add all the topic/event he want</p>
-   <p>The predefined <code>connect/disconnect</code> etc... events are automatically implemented</p>
+   <p>The predefined <code>connect/disconnect</code> ecc... events are automatically implemented</p>
 </script>
 
 <!-- nodo socketIO out, avrà lo scopo di effettuare l'emit dei dati verso il server-->
 <script type="text/javascript">
     RED.nodes.registerType('socketio-out',{
-		category:"SocketIO",
+		category:"kachelserver",
         color:"rgb(0, 230, 184)",
 		defaults:{
 			name: {value:""},
@@ -171,94 +182,15 @@
    <p>Implementation of a SocketIO server</p>
    <p>This node can be used to send socket event from a web page</p>
    <br />
-   <p>This node accepts on input:</p>
+   <p>This node accept on input:</p>
    <p><code>msg.payload</code> as <i>Object</i> = event data to send</p>
    <p><code>msg.socketIOEvent</code> as <i>String</i> = event type to send</p>
    <p><code>msg.socketIOId</code> as <i>String</i> = socket id for sending option</p>
    <p><code>msg.socketIOEmit</code> as <i>String</i> = socket emit type:</p>
    <p>&nbsp;&nbsp; possibilities are :</p>
-   <p>&nbsp;&nbsp;<code>broadcast.emit</code> as <i>String</i> = send to all sockets except this socket</p>
+   <p>&nbsp;&nbsp;<code>broadcast.emit</code> as <i>String</i> = send to all sockets expect this socket</p>
    <p>&nbsp;&nbsp;<code>emit</code> as <i>String</i> = send only to this socket</p>
-   <p>&nbsp;&nbsp;<code>room</code> as <i>String</i> = send to everyone in <code>msg.room</code></p>
    <p>&nbsp;&nbsp; not defined = send to all sockets</p>
-   <p><code>msg.socketIOAddStaticProperties</code> as <i>Object</i> = User defined properties to add to the socket (if already defined they will be overwriten)</p>
-   <br />
-</script>
-
-<!-- node socketIO join, join a room-->
-<script type="text/javascript">
-    RED.nodes.registerType('socketio-join',{
-		category:"SocketIO",
-        color:"rgb(0, 230, 184)",
-		defaults:{
-			name: {value:""},
-			server: {value:"", required:true, type:"socketio-config"}
-		},
-		inputs: 1,
-		outputs: 0,
-		icon: "bridge.png",
-		label: function(){
-			return this.name || "SocketIO JOIN";
-		}		
-    });
-</script>
-
-<script type="text/x-red" data-template-name="socketio-join">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-	<div class="form-row">
-        <label for="node-input-server"><i class="fa fa-tag"></i> Server</label>
-        <input type="text" id="node-input-server">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="socketio-join">
-   <p>Socket IO Join node</p>
-   <p>Implementation of a SocketIO server</p>
-   <p>This node can be used to join a Socket IO room</p>
-   <br />
-   <p>This node accepts on input:</p>
-   <p><code>msg.payload.room</code> as <i>String</i> = room to join</p>
-   <br />
-</script>
-
-<!-- node socketIO leave, leave a room-->
-<script type="text/javascript">
-    RED.nodes.registerType('socketio-leave',{
-		category:"SocketIO",
-        color:"rgb(0, 230, 184)",
-		defaults:{
-			name: {value:""},
-			server: {value:"", required:true, type:"socketio-config"}
-		},
-		inputs: 1,
-		outputs: 0,
-		icon: "bridge.png",
-		label: function(){
-			return this.name || "SocketIO LEAVE";
-		}		
-    });
-</script>
-
-<script type="text/x-red" data-template-name="socketio-leave">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-	<div class="form-row">
-        <label for="node-input-server"><i class="fa fa-tag"></i> Server</label>
-        <input type="text" id="node-input-server">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="socketio-leave">
-   <p>Socket IO Leave node</p>
-   <p>Implementation of a SocketIO server</p>
-   <p>This node can be used to leave a Socket IO room</p>
-   <br />
-   <p>This node accepts on input:</p>
-   <p><code>msg.payload.room</code> as <i>String</i> = room to leave</p>
+   <p><code>msg.socketIOAddStaticProperties</code> as <i>Object</i> = User defined properties to add to the socket (if already defined they will be overwrite)</p>
    <br />
 </script>
