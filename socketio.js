@@ -43,8 +43,8 @@ module.exports = function(RED) {
 			node.log("Created server " + bindOn);
 			
 			const workFolderBasePath = 'workFolder';
-			const resultsFolderPath = path.join(path.join(path.resolve(),workFolderBasePath),'kachelResults');
-			const uploadsFolderPath = path.join(path.join(path.resolve(),workFolderBasePath),'kachelUploads');
+			const resultsFolderPath = path.join(path.join(path.resolve(),workFolderBasePath),'results');
+			const uploadsFolderPath = path.join(path.join(path.resolve(),workFolderBasePath),'uploads');
 			
 			mkdirp(resultsFolderPath, function(err){
 				if (err) {
@@ -186,7 +186,7 @@ module.exports = function(RED) {
 		function handleFileUploads(socket) {
 			// Make an instance of SocketIOFileUpload and listen on this socket:
 			var uploader = new SocketIOFileUpload();
-			uploader.dir = "workFolder/kachelUploads";
+			uploader.dir = "workFolder/uploads";
 			uploader.listen(socket);
 		
 			// Do something when a file is saved:
