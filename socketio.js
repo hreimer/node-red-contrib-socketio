@@ -1,6 +1,6 @@
 /**
 * Copyright Gallimberti Telemaco 02/02/2017
-  Copyright Heinrich Reimer 08/2017
+  Copyright Heinrich Reimer 2017
 **/
 
 module.exports = function(RED) {
@@ -8,6 +8,8 @@ module.exports = function(RED) {
 		var Server = require('socket.io');
 		var SocketIOFileUpload = require('socketio-file-upload');
 		var express = require('express');
+		var mkdirp = require('mkdirp');
+		const path = require("path");		
 		
 		var io;
 		var customProperties = {};
@@ -39,6 +41,21 @@ module.exports = function(RED) {
 			}
 			var bindOn =  this.bindToNode ? "bind to Node-red port" : ("on port " + this.port);
 			node.log("Created server " + bindOn);
+			
+			const workFolderBasePath = 'workFolder';
+			const resultsFolderPath = path.join(path.join(path.resolve(),workFolderBasePath),'kachelResults');
+			const uploadsFolderPath = path.join(path.join(path.resolve(),workFolderBasePath),'kachelUploads');
+			
+			mkdirp(resultsFolderPath, function(err){
+				if (err) {
+				  node.log(err);
+				}
+			});
+			mkdirp(uploadsFolderPath, function(err){
+				if (err) {
+				  node.log(err);
+				}
+			});
 			
 			node.on('close', function() {
 				if (!this.bindToNode) {
