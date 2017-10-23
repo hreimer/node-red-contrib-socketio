@@ -78,9 +78,23 @@
 
 </script>
 
-<script type="text/x-red" data-help-name="socketio-in">
-   <p>Socket IO node</p>
-   <p>VUOTO</p>
+<script type="text/x-red" data-help-name="socketio-config">
+   <p>Socket IO configuration</p>
+   <p>
+		Configuration options:
+		<p>
+			<ul>
+				<li>Bind to Node-RED instance: currently non-functioning</li>
+				<li>Port: on which port should the frontend / socket.io client be served?</li>
+				<li>Client Serve Path: directory for the files to be served for the client, e.g. html/js/css files for the frontend</li>
+				<li>Serve client js file: just leave it to true for now</li>
+				<li>Upload folder: where the Socket.IO File Uploader should place the files that are uploaded on the frontend</li>
+				<li>Results folder: where the results of the tasks should be stored</li>
+				<li>Input Path: the path to the socket.io library</li>			
+			</ul>
+		</p>
+
+   </p>
 </script>
 
 <!-- nodo socketIO in, avrà lo scopo di accogliere i client-->

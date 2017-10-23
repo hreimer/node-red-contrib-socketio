@@ -28,31 +28,34 @@ module.exports = function(RED) {
 			this.bindToNode = n.bindToNode || false;
 			
 			if(this.bindToNode){
-				io = new Server(RED.server);
-			} else {
-				var currentWorkingDir = process.env.PWD;
-				var app = express()
-				.use(SocketIOFileUpload.router)
-				.use(express.static(currentWorkingDir + node.clientServePath))
-				.listen(node.port);
-	
-				io = new Server(app);
-				io.serveClient(node.sendClient);
-				io.path(node.path);
-				//io.listen(node.port);
-			}
-			var bindOn =  this.bindToNode ? "bind to Node-red port" : ("on port " + this.port);
+				//io = new Server(RED.server);
+				node.log("currently deprecated, noop - will be removed on next update")
+			} 
+			var currentWorkingDir = process.env.PWD;
+			var app = express()
+			.use(SocketIOFileUpload.router)
+			.use(express.static(currentWorkingDir + node.clientServePath))
+			.listen(node.port);
+
+			io = new Server(app);
+			io.serveClient(node.sendClient);
+			io.path(node.path);
+			//io.listen(node.port);
+			
+			var bindOn =  this.bindToNode ? "bind to Node-RED port" : ("on port " + this.port);
 			node.log("Created server " + bindOn);
 			
-			const resultsFolderPath = node.resultsFolder;
-			const uploadsFolderPath = node.uploadFolder;
+			var currentWorkingDir = process.env.PWD;		
+			
+			const resultsFolderPath = path.join(path.join(path.resolve(),currentWorkingDir), node.resultsFolder);			
+			const uploadFolderPath = path.join(path.join(path.resolve(),currentWorkingDir), node.uploadFolder);
 			
 			mkdirp(resultsFolderPath, function(err){
 				if (err) {
 				  node.log(err);
 				}
 			});
-			mkdirp(uploadsFolderPath, function(err){
+			mkdirp(uploadFolderPath, function(err){
 				if (err) {
 				  node.log(err);
 				}
