@@ -22,6 +22,8 @@ module.exports = function(RED) {
 			this.port = n.port || 80;
 			this.sendClient = n.sendClient;
 			this.clientServePath = n.clientServePath || "/public";
+			this.uploadFolder = n.uploadFolder || "workFolder/uploads";
+			this.resultsFolder = n.resultsFolder || "workFolder/results";
 			this.path = n.path || "/socket.io/socket.io.js";
 			this.bindToNode = n.bindToNode || false;
 			
@@ -42,9 +44,8 @@ module.exports = function(RED) {
 			var bindOn =  this.bindToNode ? "bind to Node-red port" : ("on port " + this.port);
 			node.log("Created server " + bindOn);
 			
-			const workFolderBasePath = 'workFolder';
-			const resultsFolderPath = path.join(path.join(path.resolve(),workFolderBasePath),'results');
-			const uploadsFolderPath = path.join(path.join(path.resolve(),workFolderBasePath),'uploads');
+			const resultsFolderPath = node.resultsFolder;
+			const uploadsFolderPath = node.uploadFolder;
 			
 			mkdirp(resultsFolderPath, function(err){
 				if (err) {
@@ -105,8 +106,11 @@ module.exports = function(RED) {
 				node.log("New connection to: " + socket.id);
 				sockets.push(socket);
 	
+				
 				// Handle File Uploads
-				handleFileUploads(socket);
+				var serverCfg = RED.nodes.getNode(n.server);
+								
+				handleFileUploads(serverCfg, socket);
 	
 				node.rules.forEach(function(val, i){
 					addListener(socket, val, i);
@@ -183,10 +187,10 @@ module.exports = function(RED) {
 			
 		}
 	
-		function handleFileUploads(socket) {
+		function handleFileUploads(node, socket) {
 			// Make an instance of SocketIOFileUpload and listen on this socket:
 			var uploader = new SocketIOFileUpload();
-			uploader.dir = "workFolder/uploads";
+			uploader.dir = node.uploadFolder;
 			uploader.listen(socket);
 		
 			// Do something when a file is saved:

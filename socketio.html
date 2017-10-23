@@ -1,4 +1,4 @@
-<!-- nodo socketIO config, avrà lo scopo di mantenere le informazioni per il contesto de nodi socketIo in e out-->
+<!-- node socketIO config, will have the purpose of maintaining the information for the context of socketsIo in and out-->
 <script type="text/javascript">
     RED.nodes.registerType('socketio-config',{
         category: 'config',
@@ -6,6 +6,8 @@
 			port:{value:80, required:true, validate:RED.validators.number()},
 			sendClient: {value:true},
 			clientServePath: {value:"/public"},
+			uploadFolder: {value:"workFolder/uploads"},
+			resultsFolder: {value:"workFolder/results"},
             path: {value:"/socket.io"},
 			bindToNode: {value: false}
         },
@@ -16,7 +18,7 @@
 			$("#node-config-input-bindToNode").change(function() {
 				if($(this).is(":checked")) {
 					$("#node-row-bindToNode").hide();
-					$("#node-row-clientServePathe").hide();
+					$("#node-row-clientServePath").hide();
 				}
 				else {
 					$("#node-row-bindToNode").show();
@@ -32,6 +34,12 @@
 
 			if (this.clientServePath) {
                 $("#node-config-input-clientServePath").val(this.clientServePath);
+			}
+			if (this.uploadFolder) {
+                $("#node-config-input-uploadFolder").val(this.uploadFolder);
+			}
+			if (this.resultsFolder) {
+                $("#node-config-input-resultsFolder").val(this.resultsFolder);
             }
 		}
     });
@@ -55,9 +63,18 @@
 		<input type="text" id="node-config-input-sendClient">
 	</div>
 	<div class="form-row">
+		<label for="node-config-input-uploadFolder"><i class="fa fa-folder-o"></i> Upload folder</label>
+		<input type="text" id="node-config-input-uploadFolder" placeholder="workFolder/uploads">
+	</div>
+	<div class="form-row">
+		<label for="node-config-input-resultsFolder"><i class="fa fa-folder-o"></i> Results folder</label>
+		<input type="text" id="node-config-input-resultsFolder" placeholder="workFolder/results">
+	</div>
+	<div class="form-row">
 		<label for="node-config-input-path"><i class="fa fa-paper-plane-o"></i> InputPath?</label>
 		<input type="text" id="node-config-input-path" placeholder="/socket.io">
 	</div>
+
 
 </script>
 
