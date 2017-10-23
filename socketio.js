@@ -47,8 +47,8 @@ module.exports = function(RED) {
 			
 			var currentWorkingDir = process.env.PWD;		
 			
-			const resultsFolderPath = path.join(path.join(path.resolve(),currentWorkingDir), node.resultsFolder);			
-			const uploadFolderPath = path.join(path.join(path.resolve(),currentWorkingDir), node.uploadFolder);
+			const resultsFolderPath = path.join(currentWorkingDir, node.resultsFolder);			
+			const uploadFolderPath = path.join(currentWorkingDir, node.uploadFolder);	
 			
 			mkdirp(resultsFolderPath, function(err){
 				if (err) {
